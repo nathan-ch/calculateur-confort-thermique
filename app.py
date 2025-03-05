@@ -168,7 +168,7 @@ st.markdown("""
 Développé avec ❤️ en utilisant :<br>
 <a href='https://pypi.org/project/pythermalcomfort/' target='_blank'>PythermalComfort</a> | 
 <a href='https://streamlit.io' target='_blank'>Streamlit</a> | 
-<a href='https://matplotlib.org/' target='_blank'>Matplotlib</a>
+<a href='https://matplotlib.org/' target='_blank'>Matplotlib</a><br>
 Nathan Chateau<br>
 </div>
 """, unsafe_allow_html=True)
