@@ -5,12 +5,12 @@ from pythermalcomfort.models import pmv_ppd_iso
 from pythermalcomfort.utilities import operative_tmp, v_relative, clo_dynamic_iso
 
 # Valeurs par défaut
-DEFAULT_TDB = 19.0
-DEFAULT_TR = 16.0
+DEFAULT_TDB = 20.5
+DEFAULT_TR = 17.0
 DEFAULT_V = 0.1
-DEFAULT_RH = 40.0
+DEFAULT_RH = 55.0
 DEFAULT_MET = 1.2  # Correspond à "Activité légère, assis (bureau, école)"
-DEFAULT_CLO = 0.7  # Correspond à "Tenue de travail légère"
+DEFAULT_CLO = 1 
 
 # Calcul initial avec les valeurs par défaut
 if 'pmv' not in st.session_state:
@@ -29,10 +29,10 @@ st.title("Calculateur de confort thermique")
 
 # Introduction
 st.markdown("""
-### 🎯 Objectif
+### Objectif
 Cet outil permet d'évaluer le confort thermique d'un espace selon la norme ISO 7730, en calculant les indices PMV (Vote Moyen Prévisible) et PPD (Pourcentage Prévisible d'Insatisfaits).
 
-### 📝 Comment utiliser cet outil ?
+### Comment l'utiliser ?
 1. **Paramètres environnementaux** :
    - Renseignez la température de l'air et la température radiante moyenne
    - Indiquez la vitesse de l'air et l'humidité relative
@@ -116,7 +116,7 @@ with col2:
     met = activites[activite_selectionnee]
     tenue_selectionnee = st.selectbox("Type d'habillement",
                                       options=list(vetements.keys()),
-                                      index=list(vetements.keys()).index("Tenue de travail légère (chemise de travail en coton à manches longues, pantalon de travail, chaussettes de laine et chaussures)"))
+                                      index=list(vetements.keys()).index("Tenue d'intérieur pour l'hiver (chemise à manches longues, pantalon, pull-over à manches longues, chaussettes épaisses et chaussures)"))
     clo = vetements[tenue_selectionnee]
 
 # Calcul automatique
@@ -154,7 +154,7 @@ ppd_range = 100 - 95 * np.exp(-0.03353 * pmv_range**4 - 0.2179 * pmv_range**2)
 
 # Ajout d'un fond vert pour la zone de confort [-0.5, +0.5]
 ax.axvspan(-0.5, 0.5, color='green', alpha=0.2,
-           label='Zone de confort (-0.5 < PMV < 0.5)')
+           label='Zone de confort pour 95% des personnes (-0.5 < PMV < 0.5)')
 
 ax.plot(pmv_range, ppd_range, label='Courbe de référence ISO 7730', color='blue')
 if st.session_state.pmv != 0 or st.session_state.ppd != 0:
@@ -167,6 +167,16 @@ ax.grid(True)
 ax.legend()
 st.pyplot(fig)
 
+# Interprétation textuelle des résultats
+st.markdown(
+    f"""
+    <div style="font-size: 1.1rem; padding-top: 0.2rem;">
+    <b>{st.session_state.ppd if st.session_state.ppd > 50 else 100 - st.session_state.ppd}%</b> de personnes ressentent un confort thermique <b>{'acceptable' if st.session_state.ppd < 50 else 'insuffisant'}</b>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
 # Footer
 st.markdown("---")
 st.markdown("""
@@ -175,6 +185,6 @@ Développé avec ❤️ en utilisant :<br>
 <a href='https://pypi.org/project/pythermalcomfort/' target='_blank'>PythermalComfort</a> | 
 <a href='https://streamlit.io' target='_blank'>Streamlit</a> | 
 <a href='https://matplotlib.org/' target='_blank'>Matplotlib</a><br>
-Nathan Chateau<br>
+<a href="mailto:chateaunathan@proton.me" target='_blank'>Nathan Château</a><br>
 </div>
 """, unsafe_allow_html=True)
